@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Classroom motion and student arrival monitor">
+  <title>Classroom Arrival Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Classroom Arrival Monitor home">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span>
+          <strong>Classroom</strong>
+          <small>Arrival monitor</small>
+        </span>
+      </a>
+
+      <div class="connection-status" aria-label="Raspberry Pi connection status">
+        <span class="status-dot status-dot--online"></span>
+        <span>Raspberry Pi online</span>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="welcome-section">
+        <div>
+          <p class="eyebrow">Live classroom overview</p>
+          <h1>Good morning, <span>Class SD3B</span>.</h1>
+          <p class="intro">Monitor arrivals using the classroom motion sensor.</p>
+        </div>
+        <div class="date-card">
+          <span class="date-card__label">Today</span>
+          <strong>Wednesday, 14 October</strong>
+          <span>Last updated: just now</span>
+        </div>
+      </section>
+
+      <section class="summary-grid" aria-label="Classroom summary">
+        <article class="card counter-card">
+          <div class="card-heading">
+            <span class="icon-badge icon-badge--blue" aria-hidden="true">↗</span>
+            <span class="card-label">Students arrived</span>
+            <span class="live-label"><span class="status-dot status-dot--online"></span> Live</span>
+          </div>
+          <div class="counter-value">0</div>
+          <p class="card-note">of 30 students expected</p>
+          <div class="progress-track" aria-label="0 percent of students arrived">
+            <div class="progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="card-footer">
+            <span>Arrival progress</span>
+            <strong>0%</strong>
+          </div>
+        </article>
+
+        <article class="card sensor-card">
+          <div class="card-heading">
+            <span class="icon-badge icon-badge--green" aria-hidden="true">⌁</span>
+            <span class="card-label">Motion sensor</span>
+            <span id="sensor-state" class="sensor-state">Not connected</span>
+          </div>
+          <div class="sensor-reading">
+            <span class="sensor-pulse" aria-hidden="true"></span>
+            <div>
+              <strong>Ready to detect</strong>
+              <p>Waiting for movement near the door</p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span>Sensor: PIR-01</span>
+            <span>Signal: <strong class="signal-good">Strong</strong></span>
+          </div>
+        </article>
+
+        <article class="card time-card">
+          <div class="card-heading">
+            <span class="icon-badge icon-badge--yellow" aria-hidden="true">◷</span>
+            <span class="card-label">Class time</span>
+          </div>
+          <div class="time-value">09:00</div>
+          <p class="card-note">Expected start time</p>
+          <div class="card-footer">
+            <span>Time remaining</span>
+            <strong>00:00</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="card activity-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Sensor feed</p>
+              <h2>Recent activity</h2>
+            </div>
+            <button class="text-button" type="button">Clear activity</button>
+          </div>
+
+          <div class="empty-state">
+            <div class="empty-state__icon" aria-hidden="true">⌁</div>
+            <h3>No motion detected yet</h3>
+            <p>When the PIR sensor detects movement, arrival notifications will appear here.</p>
+          </div>
+        </article>
+
+        <aside class="card notification-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Notifications</p>
+              <h2>Latest alert</h2>
+            </div>
+            <span class="notification-count">0</span>
+          </div>
+
+          <div class="notification-empty">
+            <span class="notification-empty__icon" aria-hidden="true">✓</span>
+            <strong>All clear</strong>
+            <p>No new motion alerts.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="setup-banner" aria-label="Project setup note">
+        <div class="setup-icon" aria-hidden="true">i</div>
+        <div>
+          <strong id="connection-message">Connect your sensor to get started</strong>
+          <p id="connection-detail">Press Connect to check the PIR sensor on GPIO 4.</p>
+        </div>
+        <button id="connect-button" class="outline-button" type="button">Connect</button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Classroom Arrival Monitor</span>
+      <span>IoT project starter template</span>
+    </footer>
+  </div>
+  <script>
+    const connectButton = document.querySelector("#connect-button");
+    const sensorState = document.querySelector("#sensor-state");
+    const connectionMessage = document.querySelector("#connection-message");
+    const connectionDetail = document.querySelector("#connection-detail");
+
+    connectButton.addEventListener("click", async () => {
+      connectButton.disabled = true;
+      connectButton.textContent = "Connecting...";
+      connectionMessage.textContent = "Connecting to motion sensor...";
+
+      try {
+        const response = await fetch("/api/sensor", { cache: "no-store" });
+        if (!response.ok) throw new Error("Sensor API returned an error");
+
+        const sensor = await response.json();
+        if (!sensor.connected) throw new Error("Sensor is not connected");
+
+        sensorState.textContent = sensor.motion ? "Motion detected" : "Connected";
+        connectionMessage.textContent = "Motion sensor connected";
+        connectionDetail.textContent = sensor.motion
+          ? "The sensor is currently detecting movement."
+          : "PIR sensor is ready and waiting for movement.";
+        connectButton.textContent = "Connected";
+      } catch (error) {
+        sensorState.textContent = "Not connected";
+        connectionMessage.textContent = "Motion sensor not connected";
+        connectionDetail.textContent = "Start sensor.py, then press Connect again.";
+        connectButton.textContent = "Try again";
+      } finally {
+        connectButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
