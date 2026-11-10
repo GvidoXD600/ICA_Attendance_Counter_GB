@@ -12,3 +12,12 @@ The system helps lecturers track attendance effortlessly as students walk into t
    - Students entering before the cutoff are marked **Present**.
    - Students entering after the cutoff are automatically categorized as **Late**.
 4. **Attendance Log:** All records are saved locally on the Pi's database so the lecturer can view or export the final attendance list easily.
+
+## Hardware Used
+1. Raspberry Pi 5
+2. Female-to-Female Jumper wires
+3. SSD Card
+4. PIR Motion Sensor
+5. Camera Sensor
+
+
