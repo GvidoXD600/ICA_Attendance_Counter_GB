@@ -20,8 +20,10 @@ The system helps lecturers track attendance effortlessly as students walk into t
 4. PIR Motion Sensor
 5. Camera Sensor
 
-## Webpage of Attendance Counter 
-<img width="1917" height="902" alt="image" src="https://github.com/user-attachments/assets/3533009e-7ce5-478e-b84d-111d48918957" />
+## Screencast of the PIR Motion Sensor Connected and Working  
+https://github.com/user-attachments/assets/b51aa03a-daed-43ab-b8e3-74741c7a6b69
+
+
 
 
 
