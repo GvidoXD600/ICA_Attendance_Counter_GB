@@ -1,0 +1,6 @@
+.venv/
+.venv-old/
+__pycache__/
+*.pyc
+.lgd-*
+Backend/Database/*.db

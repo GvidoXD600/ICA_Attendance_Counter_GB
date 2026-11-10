@@ -25,9 +25,9 @@
         </span>
       </a>
 
-      <div class="connection-status" aria-label="Raspberry Pi connection status">
-        <span class="status-dot status-dot--online"></span>
-        <span>Raspberry Pi online</span>
+      <div class="account-controls">
+        <span id="lecturer-name" class="lecturer-name">Lecturer</span>
+        <button id="logout-button" class="outline-button" type="button">Log out</button>
       </div>
     </header>
 
@@ -52,7 +52,7 @@
             <span class="card-label">Students arrived</span>
             <span class="live-label"><span class="status-dot status-dot--online"></span> Live</span>
           </div>
-          <div class="counter-value">0</div>
+          <div id="arrival-count" class="counter-value">0</div>
           <p class="card-note">of 30 students expected</p>
           <div class="progress-track" aria-label="0 percent of students arrived">
             <div class="progress-bar" style="width: 0%"></div>
@@ -69,11 +69,11 @@
             <span class="card-label">Motion sensor</span>
             <span id="sensor-state" class="sensor-state">Not connected</span>
           </div>
-          <div class="sensor-reading">
+          <div id="sensor-reading" class="sensor-reading">
             <span class="sensor-pulse" aria-hidden="true"></span>
             <div>
-              <strong>Ready to detect</strong>
-              <p>Waiting for movement near the door</p>
+              <strong id="sensor-reading-title">Ready to detect</strong>
+              <p id="sensor-reading-detail">Waiting for movement near the door</p>
             </div>
           </div>
           <div class="card-footer">
@@ -111,6 +111,7 @@
             <h3>No motion detected yet</h3>
             <p>When the PIR sensor detects movement, arrival notifications will appear here.</p>
           </div>
+          <ul id="present-list" class="present-list" aria-label="Present students"></ul>
         </article>
 
         <aside class="card notification-card">
@@ -136,7 +137,10 @@
           <strong id="connection-message">Connect your sensor to get started</strong>
           <p id="connection-detail">Press Connect to check the PIR sensor on GPIO 4.</p>
         </div>
-        <button id="connect-button" class="outline-button" type="button">Connect</button>
+        <div class="sensor-actions">
+          <button id="connect-button" class="outline-button" type="button">Connect</button>
+          <button id="disconnect-button" class="outline-button" type="button" disabled>Disconnect</button>
+        </div>
       </section>
     </main>
 
@@ -145,39 +149,6 @@
       <span>IoT project starter template</span>
     </footer>
   </div>
-  <script>
-    const connectButton = document.querySelector("#connect-button");
-    const sensorState = document.querySelector("#sensor-state");
-    const connectionMessage = document.querySelector("#connection-message");
-    const connectionDetail = document.querySelector("#connection-detail");
-
-    connectButton.addEventListener("click", async () => {
-      connectButton.disabled = true;
-      connectButton.textContent = "Connecting...";
-      connectionMessage.textContent = "Connecting to motion sensor...";
-
-      try {
-        const response = await fetch("/api/sensor", { cache: "no-store" });
-        if (!response.ok) throw new Error("Sensor API returned an error");
-
-        const sensor = await response.json();
-        if (!sensor.connected) throw new Error("Sensor is not connected");
-
-        sensorState.textContent = sensor.motion ? "Motion detected" : "Connected";
-        connectionMessage.textContent = "Motion sensor connected";
-        connectionDetail.textContent = sensor.motion
-          ? "The sensor is currently detecting movement."
-          : "PIR sensor is ready and waiting for movement.";
-        connectButton.textContent = "Connected";
-      } catch (error) {
-        sensorState.textContent = "Not connected";
-        connectionMessage.textContent = "Motion sensor not connected";
-        connectionDetail.textContent = "Start sensor.py, then press Connect again.";
-        connectButton.textContent = "Try again";
-      } finally {
-        connectButton.disabled = false;
-      }
-    });
-  </script>
+  <script src="js/app.js"></script>
 </body>
 </html>

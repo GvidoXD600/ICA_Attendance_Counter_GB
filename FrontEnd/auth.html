@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lecturer login and registration">
+  <title>Lecturer access | Classroom Arrival Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="auth-page">
+    <section class="auth-card" aria-labelledby="auth-title">
+      <a class="brand auth-brand" href="index.html" aria-label="Classroom Arrival Monitor home">
+        <span class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span>
+          <strong>Classroom</strong>
+          <small>Arrival monitor</small>
+        </span>
+      </a>
+
+      <div class="auth-heading">
+        <p class="eyebrow">Lecturer access</p>
+        <h1 id="auth-title">Welcome back</h1>
+        <p class="intro">Sign in to view your classroom dashboard.</p>
+      </div>
+
+      <div class="auth-tabs" role="tablist" aria-label="Account access">
+        <button id="login-tab" class="auth-tab auth-tab--active" type="button" role="tab" aria-selected="true">Log in</button>
+        <button id="register-tab" class="auth-tab" type="button" role="tab" aria-selected="false">Register</button>
+      </div>
+
+      <form id="login-panel" class="auth-form" role="tabpanel" novalidate>
+        <label for="login-email">Email address</label>
+        <input id="login-email" name="email" type="email" autocomplete="email" required>
+
+        <label for="login-password">Password</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+
+        <button class="auth-submit" type="submit">Log in</button>
+        <p class="auth-message" aria-live="polite"></p>
+      </form>
+
+      <form id="register-panel" class="auth-form" role="tabpanel" novalidate hidden>
+        <label for="register-name">Full name</label>
+        <input id="register-name" name="name" type="text" autocomplete="name" required>
+
+        <label for="register-email">Email address</label>
+        <input id="register-email" name="email" type="email" autocomplete="email" required>
+
+        <label for="register-password">Password</label>
+        <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+
+        <button class="auth-submit" type="submit">Create account</button>
+        <p class="auth-message" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+  <div id="error-modal" class="error-modal" hidden>
+    <div class="error-modal__content" role="alertdialog" aria-modal="true" aria-labelledby="error-title">
+      <button id="close-error" class="error-modal__close" type="button" aria-label="Close error">×</button>
+      <p class="eyebrow">Request failed</p>
+      <h2 id="error-title">Unable to continue</h2>
+      <p id="error-message"></p>
+      <button id="close-error-action" class="auth-submit" type="button">Close</button>
+    </div>
+  </div>
+  <script src="js/auth.js"></script>
+</body>
+</html>
