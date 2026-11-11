@@ -87,12 +87,31 @@
             <span class="icon-badge icon-badge--yellow" aria-hidden="true">◷</span>
             <span class="card-label">Class time</span>
           </div>
-          <div class="time-value">09:00</div>
-          <p class="card-note">Expected start time</p>
+          <div id="current-time" class="time-value">--:--</div>
+          <label class="time-limit-control" for="time-limit">
+            Attendance window
+            <span>
+              <input id="time-limit" type="number" min="1" max="1440" step="1" value="30">
+              min
+            </span>
+          </label>
+          <button id="start-timer" class="outline-button timer-start-button" type="button">
+            Start timer
+          </button>
           <div class="card-footer">
             <span>Time remaining</span>
-            <strong>00:00</strong>
+            <strong id="time-remaining">00:00</strong>
           </div>
+        </article>
+
+        <article class="card late-card">
+          <div class="card-heading">
+            <span class="icon-badge icon-badge--yellow" aria-hidden="true">!</span>
+            <span class="card-label">Late students</span>
+          </div>
+          <div id="late-count" class="counter-value">0</div>
+          <p class="card-note">Arrived after the timer ended</p>
+          <ul id="late-list" class="late-list" aria-label="Late students"></ul>
         </article>
       </section>
 

@@ -10,7 +10,73 @@ const lecturerName = document.querySelector("#lecturer-name");
 const logoutButton = document.querySelector("#logout-button");
 const arrivalCount = document.querySelector("#arrival-count");
 const presentList = document.querySelector("#present-list");
+const lateCount = document.querySelector("#late-count");
+const lateList = document.querySelector("#late-list");
+const currentTime = document.querySelector("#current-time");
+const timeLimit = document.querySelector("#time-limit");
+const timeRemaining = document.querySelector("#time-remaining");
+const startTimer = document.querySelector("#start-timer");
+const savedTimeLimit = Number.parseInt(localStorage.getItem("attendance-window-minutes"), 10);
+const defaultTimeLimit = Number.isInteger(savedTimeLimit) && savedTimeLimit >= 1 && savedTimeLimit <= 1440
+  ? savedTimeLimit
+  : 30;
+let attendanceWindowEndsAt = null;
 let sensorConnected = false;
+
+function updateCurrentTime() {
+  currentTime.textContent = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
+}
+
+function updateTimeRemaining() {
+  if (attendanceWindowEndsAt === null) {
+    timeRemaining.textContent = "00:00";
+    return;
+  }
+  const remainingSeconds = Math.max(
+    0,
+    Math.ceil((attendanceWindowEndsAt - Date.now()) / 1000),
+  );
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = remainingSeconds % 60;
+  timeRemaining.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  if (remainingSeconds === 0) {
+    startTimer.textContent = "Start timer";
+  }
+}
+
+function getAttendanceTimestamp(value) {
+  return Date.parse(`${value}Z`);
+}
+
+timeLimit.value = String(defaultTimeLimit);
+timeLimit.addEventListener("change", () => {
+  const minutes = Number.parseInt(timeLimit.value, 10);
+  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) {
+    timeLimit.value = "30";
+    localStorage.setItem("attendance-window-minutes", "30");
+  } else {
+    localStorage.setItem("attendance-window-minutes", String(minutes));
+  }
+  attendanceWindowEndsAt = null;
+  startTimer.textContent = "Start timer";
+  updateTimeRemaining();
+});
+
+startTimer.addEventListener("click", () => {
+  let minutes = Number.parseInt(timeLimit.value, 10);
+  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) {
+    minutes = 30;
+    timeLimit.value = "30";
+    localStorage.setItem("attendance-window-minutes", "30");
+  }
+  attendanceWindowEndsAt = Date.now() + minutes * 60 * 1000;
+  startTimer.textContent = "Restart timer";
+  updateTimeRemaining();
+});
 
 async function loadLecturer() {
   const response = await fetch("/api/me", { cache: "no-store" });
@@ -40,6 +106,18 @@ async function updateAttendance() {
   const students = await response.json();
   arrivalCount.textContent = students.length;
   presentList.replaceChildren(...students.map((student) => {
+    const item = document.createElement("li");
+    item.textContent = `${student.full_name} (${student.student_id})`;
+    return item;
+  }));
+
+  const timerEnded = attendanceWindowEndsAt !== null
+    && Date.now() >= attendanceWindowEndsAt;
+  const lateStudents = timerEnded
+    ? students.filter((student) => getAttendanceTimestamp(student.detected_at) > attendanceWindowEndsAt)
+    : [];
+  lateCount.textContent = lateStudents.length;
+  lateList.replaceChildren(...lateStudents.map((student) => {
     const item = document.createElement("li");
     item.textContent = `${student.full_name} (${student.student_id})`;
     return item;
@@ -129,6 +207,8 @@ connectButton.addEventListener("click", () => setSensorConnection("connect"));
 disconnectButton.addEventListener("click", () => setSensorConnection("disconnect"));
 loadLecturer();
 updateAttendance();
+updateCurrentTime();
+updateTimeRemaining();
 
 setInterval(() => {
   if (sensorConnected) {
@@ -136,5 +216,7 @@ setInterval(() => {
   }
 }, 1000);
 
+setInterval(updateCurrentTime, 1000);
+setInterval(updateTimeRemaining, 1000);
 setInterval(updateAttendance, 2000);
 setInterval(scanForStudent, 3000);
