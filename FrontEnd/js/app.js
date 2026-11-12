@@ -13,6 +13,7 @@ const presentList = document.querySelector("#present-list");
 const lateCount = document.querySelector("#late-count");
 const lateList = document.querySelector("#late-list");
 const currentTime = document.querySelector("#current-time");
+const currentDate = document.querySelector("#current-date");
 const timeLimit = document.querySelector("#time-limit");
 const timeRemaining = document.querySelector("#time-remaining");
 const startTimer = document.querySelector("#start-timer");
@@ -28,6 +29,14 @@ function updateCurrentTime() {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+  }).format(new Date());
+}
+
+function updateCurrentDate() {
+  currentDate.textContent = new Intl.DateTimeFormat(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
   }).format(new Date());
 }
 
@@ -208,6 +217,7 @@ disconnectButton.addEventListener("click", () => setSensorConnection("disconnect
 loadLecturer();
 updateAttendance();
 updateCurrentTime();
+updateCurrentDate();
 updateTimeRemaining();
 
 setInterval(() => {
@@ -217,6 +227,7 @@ setInterval(() => {
 }, 1000);
 
 setInterval(updateCurrentTime, 1000);
+setInterval(updateCurrentDate, 60000);
 setInterval(updateTimeRemaining, 1000);
 setInterval(updateAttendance, 2000);
 setInterval(scanForStudent, 3000);
