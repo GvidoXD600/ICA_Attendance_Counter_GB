@@ -23,6 +23,13 @@ The system helps lecturers track attendance effortlessly as students walk into t
 ## Screencast of the PIR Motion Sensor Connected and Working  
 https://github.com/user-attachments/assets/b51aa03a-daed-43ab-b8e3-74741c7a6b69
 
+## Screencast of both PIR Motion and Camera Sensor Working 
+https://github.com/user-attachments/assets/13eb3bb0-35d3-47a4-9408-a088da65edb0
+
+1. The Camera Sensor when it detects the student and matches their photo they are added to a counter with their Name and Student Number 
+
+
+
 
 
 
